@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Login - UAP Complaint Portal</title>
+
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+        }
+
+        .bg-primary {
+            background-color: #275CAB;
+        }
+
+        .bg-secondary {
+            background-color: #AC1F7D;
+        }
+
+        .text-primary {
+            color: #275CAB;
+        }
+
+        .text-secondary {
+            color: #AC1F7D;
+        }
+
+        .border-primary {
+            border-color: #275CAB;
+        }
+
+        .border-secondary {
+            border-color: #AC1F7D;
+        }
+
+        .btn-primary {
+            background-color: #275CAB;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e4a89;
+        }
+
+        .btn-secondary {
+            background-color: #AC1F7D;
+        }
+
+        .btn-secondary:hover {
+            background-color: #8c1965;
+        }
+
+        .bg-overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center"
+    style="background-image: url('https://i.postimg.cc/VNq8Lv75/uni.jpg'); background-size: cover; background-position: center;">
+    <!-- Dark overlay -->
+    <div class="absolute inset-0 bg-overlay"></div>
+
+    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl z-10">
+        <div class="text-center">
+            <div class="mx-auto h-20 w-auto flex items-center justify-center">
+                <img src="https://i.postimg.cc/nr6RDYrx/uaplogo.png" alt="UAP Logo" class="h-32 w-32">
+            </div>
+            <h2 class="mt-6 text-3xl font-extrabold text-primary">UAP Complaint Portal</h2>
+            <p class="mt-2 text-sm text-gray-600">Please sign in with your username and password</p>
+        </div>
+
+        {% if messages %}
+        <div>
+            {% for message in messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">
+                    {% if message.tags %}{{ message.tags|title }}!{% else %}Message!{% endif %}
+                </strong>
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form class="mt-8 space-y-6" method="POST">
+            {% csrf_token %}
+            <div class="rounded-md shadow-sm">
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input id="username" name="username" type="text" required
+                        class="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                        placeholder="Enter your username">
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input id="password" name="password" type="password" required
+                        class="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                        placeholder="Enter your password">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox"
+                        class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                        Remember me
+                    </label>
+                </div>
+
+                <div class="text-sm">
+                    <a href="#" class="font-medium text-secondary hover:text-secondary">
+                        Forgot your password?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-secondary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition duration-150 ease-in-out">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fas fa-sign-in-alt text-white"></i>
+                    </span>
+                    Sign in
+                </button>
+            </div>
+        </form>
+        <div class="text-center mt-4">
+            <p class="text-sm text-gray-600">Don't have an account? <a href="{% url 'register' %}"
+                    class="font-medium text-primary hover:text-primary">Register here</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+
+            togglePassword.addEventListener('click', function () {
+                // Toggle password visibility
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+
+                // Toggle eye icon
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        });
+    </script>
+</body>
+
+</html>
