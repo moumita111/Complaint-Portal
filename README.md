@@ -1,7 +1,7 @@
-# University Complaint Management System
+# University Complaint-Portal
 
 ## Overview
-The **University Complaint Management System** is a web-based platform designed to streamline the process of lodging, managing, and resolving complaints within a university environment. This system enables students, faculty, and staff to submit complaints and track their status efficiently.
+The **University Complaint-Portal** is a web-based platform designed to streamline the process of lodging, managing, and resolving complaints within a university environment. This system enables students, faculty, and staff to submit complaints and track their status efficiently.
 
 ## Features
 - **User Authentication**: Secure login and registration for students, faculty, and administrators.
