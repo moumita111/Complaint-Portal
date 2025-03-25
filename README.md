@@ -14,7 +14,7 @@ The **University Complaint-Portal** is a web-based platform designed to streamli
 ## Tech Stack
 - **Backend**: Django (Python)
 - **Frontend**: Tailwind CSS, HTML, JavaScript
-- **Database**: SQLite/PostgreSQL/MySQL
+- **Database**: SQLite/MySQL
 - **Version Control**: Git & GitHub
 
 ## Installation & Setup
