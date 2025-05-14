@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Authority Dashboard - UAP Complaint Portal</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#275CAB',
+                        secondary: '#AC1F7D',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+        }
+
+
+        .card-hover {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(90deg, #275CAB, #AC1F7D);
+        }
+
+        .sidebar-item:hover {
+            background-color: #f3f4f6;
+            border-left: 4px solid #275CAB;
+        }
+
+        .sidebar-item.active {
+            background-color: #f3f4f6;
+            border-left: 4px solid #AC1F7D;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="fixed h-full w-64 bg-white shadow-lg z-10 overflow-y-auto">
+            <!-- Logo -->
+            <div class="flex items-center justify-center p-6 border-b">
+                <div class="flex items-center">
+                    <div>
+                        <img src="https://i.postimg.cc/nr6RDYrx/uaplogo.png" alt="UAP Logo" class="h-12 w-12">
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-semibold text-gray-800">Authority Portal</p>
+                        <div class="flex items-center">
+                            <span class="text-xs bg-primary text-white px-2 py-0.5 rounded-full">Admin Access</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Items -->
+            <nav class="mt-6">
+                <div class="px-4">
+                    <a href="#"
+                        class="sidebar-item active flex items-center p-3 rounded transition-all duration-200 border-l-4 border-secondary">
+                        <i class="fas fa-tachometer-alt" style="color: #AC1F7D;"></i>
+                        <span class="ml-3 font-medium text-secondary">Dashboard</span>
+                    </a>
+
+                </div>
+
+                <div class="px-4 mt-8 border-t pt-4">
+                    <form action="{% url 'authority_logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="sidebar-item flex w-full items-center p-3 rounded transition-all duration-200 border-l-4 border-transparent">
+                            <i class="fas fa-sign-out-alt" style="color: #e03416;"></i>
+                            <span class="ml-3 font-medium text-red-600">Logout</span>
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="ml-64 flex-1 overflow-y-auto">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm">
+                <div class="flex justify-between items-center p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Authority Dashboard</h2>
+                    <div class="flex items-center space-x-4">
+                        
+                        <div class="flex items-center">
+                            <img src="https://i.postimg.cc/8k0cd7W4/user.png" alt="User"
+                                class="w-8 h-8 rounded-full border-2 border-primary">
+                            <span class="ml-2 font-medium text-gray-700">{{ authority.user.username }}</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="p-6">
+                <!-- Dashboard Header -->
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-800">Welcome, {{ authority.user.username }}</h1>
+                    <p class="text-gray-600 mt-1">Manage and respond to student complaints</p>
+                </div>
+
+                <!-- Dashboard Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm p-6 card-hover">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 text-primary">
+                                <i class="fas fa-inbox text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Total Complaints</h3>
+                                <p class="text-2xl font-bold text-gray-800">{{ complaints|length }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6 card-hover">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Resolved Issues</h3>
+                                <p class="text-2xl font-bold text-gray-800">{{ complaints|length }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complaints List -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="flex items-center justify-between px-6 py-4 border-b">
+                        <h2 class="font-semibold text-lg text-gray-800">Recent Complaints</h2>
+                        <div class="flex items-center text-sm">
+                            <button class="flex items-center text-primary hover:underline">
+                                <i class="fas fa-filter mr-2"></i>
+                                Filter
+                            </button>
+                            <span class="mx-2 text-gray-300">|</span>
+                            <button class="flex items-center text-primary hover:underline">
+                                <i class="fas fa-sort-amount-down mr-2"></i>
+                                Sort
+                            </button>
+                        </div>
+                    </div>
+
+                    {% if complaints %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Complaint
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Category
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for complaint in complaints %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">{{ complaint.title }}
+                                                </div>
+                                                <div class="text-sm text-gray-500 truncate max-w-xs">{{complaint.description|truncatechars:50 }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            {% if complaint.category %}{{ complaint.category }}{% else %}General{% endif%}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="status-badge 
+                                            {% if complaint.status == 'resolved' %}bg-green-100 text-green-800
+                                            {% elif complaint.status == 'in_progress' %}bg-blue-100 text-blue-800
+                                            {% elif complaint.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            <i class="fas fa-circle text-xs mr-1"></i>
+                                            {{ complaint.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ complaint.created_at|date:"M d, Y" }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex justify-end space-x-2">
+                                            <a href="{% url 'respond_complaint' complaint.id %}"
+                                                class="text-primary hover:text-opacity-80">
+                                                <span class="bg-blue-50 px-2 py-1 rounded-md flex items-center">
+                                                    <i class="fas fa-reply mr-1"></i> Respond
+                                                </span>
+                                            </a>
+                                            <a href="{% url 'view_feedback' complaint.id %}"
+                                                class="text-secondary hover:text-opacity-80">
+                                                <span class="bg-purple-50 px-2 py-1 rounded-md flex items-center">
+                                                    <i class="fas fa-star mr-1"></i> Feedback
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-10 text-center">
+                        <div class="text-gray-300 mb-4">
+                            <i class="fas fa-inbox text-5xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-1">No complaints available</h3>
+                        <p class="text-gray-500">There are no complaints requiring your attention at this time.</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="bg-gray-50 px-6 py-3 flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            Showing <span class="font-medium">{{ complaints|length }}</span> complaints
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 border rounded-md text-sm text-gray-600 hover:bg-gray-100">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="px-3 py-1 border rounded-md text-sm text-white bg-primary">
+                                1
+                            </button>
+                            <button class="px-3 py-1 border rounded-md text-sm text-gray-600 hover:bg-gray-100">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>
