@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Authority Login - UAP Complaint Portal</title>
+
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .gradient-overlay {
+            background: linear-gradient(135deg, rgba(39, 92, 171, 0.9), rgba(172, 31, 125, 0.9));
+        }
+
+        .login-container {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-input:focus {
+            box-shadow: 0 0 0 3px rgba(39, 92, 171, 0.2);
+        }
+
+        .btn-login {
+            background: linear-gradient(90deg, #275CAB, #AC1F7D);
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(172, 31, 125, 0.3);
+        }
+
+        .badge-authority {
+            background: linear-gradient(90deg, #275CAB, #AC1F7D);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            color: #AC1F7D;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div class="w-full max-w-md">
+        <!-- Login Card -->
+        <div class="bg-white rounded-2xl overflow-hidden login-container">
+            <!-- Top Header with Logo -->
+            <div class="relative h-32 bg-cover bg-center"
+                style="background-image: url('https://i.postimg.cc/VNq8Lv75/uni.jpg')">
+                <div class="absolute inset-0 gradient-overlay"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center">
+                        <img src="https://i.postimg.cc/nr6RDYrx/uaplogo.png" alt="UAP Logo"
+                            class="h-16 w-16 mx-auto bg-white p-1 rounded-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Form Section -->
+            <div class="px-8 py-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Authority Login</h2>
+                    <div class="mt-1 flex justify-center">
+                        <span class="badge-authority">
+                            <i class="fas fa-shield-alt mr-1"></i> Restricted Access
+                        </span>
+                    </div>
+                </div>
+
+                {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                    <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3 text-lg"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+
+                    <div>
+                        <label for="username" class="block mb-1 text-sm font-medium text-gray-700">Username</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user input-icon"></i>
+                            </div>
+                            <input id="username" type="text" name="username" required
+                                class="form-input block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-[#275CAB] focus:ring-[#275CAB]"
+                                placeholder="Enter your username">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <a href="#" class="text-sm text-[#275CAB] hover:underline">Forgot password?</a>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock input-icon"></i>
+                            </div>
+                            <input id="password" type="password" name="password" required
+                                class="form-input block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-[#275CAB] focus:ring-[#275CAB]"
+                                placeholder="Enter your password">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <button type="button" id="togglePassword" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                                    <i class="fas fa-eye" id="eye-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                            class="w-full btn-login text-white py-3 rounded-lg font-medium flex items-center justify-center">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Login as Authority
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex justify-center">
+                <a href="{% url 'login' %}" class="text-sm text-gray-600 hover:text-[#275CAB] flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Student Login
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-6 text-center text-gray-500 text-sm">
+            <p>© 2025 UAP Complaint Portal. All rights reserved.</p>
+            <p class="mt-1 text-xs">Administration & Faculty Access Only</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+
+            togglePassword.addEventListener('click', function () {
+                // Toggle password visibility
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+
+                // Toggle eye icon
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        });
+    </script>
+</body>
+
+</html>
