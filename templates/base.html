@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>{% block title %}UAP Complaint Portal{% endblock %}</title>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f3f4f6;
+            border-left: 4px solid #275CAB;
+        }
+
+        .sidebar-item.active {
+            background-color: #f3f4f6;
+            border-left: 4px solid #AC1F7D;
+        }
+
+        .logo-text {
+            background: linear-gradient(90deg, #275CAB, #AC1F7D);
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#275CAB',
+                        secondary: '#AC1F7D',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="fixed h-full w-64 bg-white shadow-lg z-10 overflow-y-auto">
+            <!-- Logo -->
+            <div class="flex items-center justify-center p-6 border-b">
+                <div class="flex items-center">
+                    <div>
+                        <img src="https://i.postimg.cc/nr6RDYrx/uaplogo.png" alt="UAP Logo" class="h-16 w-16">
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Complaint Portal</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Items -->
+            <nav class="mt-6">
+                <div class="px-4">
+                    <a href="{% url 'home' %}"
+                        class="sidebar-item flex items-center p-3 rounded transition-all duration-200 border-l-4 border-transparent {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt" style="color: #275CAB;"
+                            color="{% if request.resolver_match.url_name == 'dashboard' %}#AC1F7D{% else %}#275CAB{% endif %}"></i>
+                        <span
+                            class="ml-3 font-medium {% if page_name == 'dashboard' %}text-secondary{% else %}text-primary{% endif %}">Dashboard</span>
+                    </a>
+
+                    <a href="{% url 'post_complaint' %}"
+                        class="sidebar-item flex items-center p-3 rounded transition-all duration-200 border-l-4 border-transparent {% if request.resolver_match.url_name == 'new_complaint' %}active{% endif %}">
+                        <i class="fas fa-plus-circle" style="color: #275CAB;"
+                            color="{% if request.resolver_match.url_name == 'new_complaint' %}#AC1F7D{% else %}#275CAB{% endif %}"></i>
+                        <span
+                            class="ml-3 font-medium {% if page_name == 'new_complaint' %}text-secondary{% else %}text-primary{% endif %}">Submit
+                            New Complaint</span>
+                    </a>
+
+                    <a href="{% url 'profile' %}"
+                        class="sidebar-item flex items-center p-3 rounded transition-all duration-200 border-l-4 border-transparent {% if request.resolver_match.url_name == 'my_complaints' %}active{% endif %}">
+                        <i class="fas fa-list-ul" style="color: #275CAB;"
+                            color="{% if request.resolver_match.url_name == 'my_complaints' %}#AC1F7D{% else %}#275CAB{% endif %}"></i>
+                        <span
+                            class="ml-3 font-medium {% if page_name == 'my_complaints' %}text-secondary{% else %}text-primary{% endif %}">My
+                            profile</span>
+                    </a>
+
+                    <a href="{% url 'complaint_responses' %}"
+                        class="sidebar-item flex items-center p-3 rounded transition-all duration-200 border-l-4 border-transparent {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}">
+                        <i class="fas fa-bell" style="color: #275CAB;"
+                            color="{% if request.resolver_match.url_name == 'notifications' %}#AC1F7D{% else %}#275CAB{% endif %}"></i>
+                        <span
+                            class="ml-3 font-medium {% if page_name == 'responses' %}text-secondary{% else %}text-primary{% endif %}">Notifications</span>
+                    </a>
+                </div>
+
+                <div class="px-4 mt-8 border-t pt-4">
+                    <a href="{% url 'university_faq' %}"
+                        class="sidebar-item flex items-center p-3 rounded transition-all duration-200 border-l-4 border-transparent {% if request.resolver_match.url_name == 'help' %}active{% endif %}">
+                        <i class="fas fa-question-circle" style="color: #275CAB;"
+                            color="{% if request.resolver_match.url_name == 'help' %}#AC1F7D{% else %}#275CAB{% endif %}"></i>
+                        <span
+                            class="ml-3 font-medium {% if request.resolver_match.url_name == 'help' %}text-secondary{% else %}text-primary{% endif %}">AI FAQ</span>
+                    </a>
+
+                    <a href="{% url 'logout' %}"
+                        class="sidebar-item flex items-center p-3 rounded transition-all duration-200 border-l-4 border-transparent">
+                        <i class="fas fa-sign-out-alt" style="color: #e03416;"></i>
+                        <span class="ml-3 font-medium text-red-600">Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="ml-64 flex-1 overflow-y-auto">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm">
+                <div class="flex justify-between items-center p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">{% block header_title %}Home - View Recent
+                        Complaints{% endblock %}</h2>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <i class="fas fa-bell text-gray-600 cursor-pointer"></i>
+                            <span
+                                class="absolute -top-1 -right-1 bg-secondary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
+                        </div>
+                        <div class="flex items-center">
+                            <img src="https://i.postimg.cc/8k0cd7W4/user.png" alt="User"
+                                class="w-8 h-8 rounded-full border-2 border-primary">
+                            <span class="ml-2 text-sm font-medium text-gray-700">{{ user.username }}</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="p-6">
+                {% block content %}
+
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>
