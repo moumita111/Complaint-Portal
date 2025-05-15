@@ -311,5 +311,38 @@ def authority_dashboard(request):
     })
 
 
+@login_required(login_url='authority_login')
+def respond_to_complaint(request, complaint_id):
+    authority = get_object_or_404(Authority, user=request.user)
+    complaint = get_object_or_404(Complaint, id=complaint_id, department=authority.department)
+
+    if request.method == "POST":
+        response_text = request.POST.get("response_text")
+        if response_text:
+            ComplaintResponse.objects.create(
+                complaint=complaint,
+                authority=authority,
+                response_text=response_text
+            )
+            complaint.status = "in_progress"
+            complaint.save()
+            messages.success(request, "Response submitted.")
+            return redirect("authority_dashboard")
+
+    return render(request, "respond_complaint.html", {
+        "complaint": complaint
+    })
+
+
+@login_required(login_url='authority_login')
+def view_feedback(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    feedback = Feedback.objects.filter(complaint=complaint).first()
+
+    return render(request, "view_feedback.html", {
+        "complaint": complaint,
+        "feedback": feedback
+    })
+
 
 
