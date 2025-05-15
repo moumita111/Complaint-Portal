@@ -68,7 +68,23 @@ class ComplaintResponse(models.Model):
         return f"Response by {self.authority.user.username} on {self.complaint.title}"
 
 
+class Feedback(models.Model):
+    complaint = models.OneToOneField(Complaint, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(default=0)
+    comments = models.TextField(blank=True)
 
+    def __str__(self):
+        return f"Feedback by {self.user.username} - {self.rating}/5"
+    
+
+class Announcement(models.Model):
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
 
 
