@@ -63,6 +63,39 @@ def register(request):
 
     return render(request, 'register.html')
 
+# Profile view
+@login_required(login_url='login')
+def profile(request):
+    user = request.user
+    profile, created = UserProfile.objects.get_or_create(user=user)
+
+    # Get all complaints by this user (exclude anonymous)
+    complaints = Complaint.objects.filter(user=user).order_by('-created_at')
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "update":
+            profile.phone = request.POST.get("phone", "")
+            profile.semester = request.POST.get("semester", "")
+            profile.department = request.POST.get("department", "")
+            if 'profile_picture' in request.FILES:
+                profile.profile_picture = request.FILES['profile_picture']
+            profile.save()
+            messages.success(request, "Profile updated successfully.")
+
+        elif action == "remove_picture":
+            profile.profile_picture.delete(save=True)
+            messages.success(request, "Profile picture removed.")
+
+    return render(request, "profile.html", {
+        "profile": profile,
+        "user": user,
+        "complaints": complaints,
+        "page_name": "my_complaints"
+    })
+
+
 # Configure Gemini API
 client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
