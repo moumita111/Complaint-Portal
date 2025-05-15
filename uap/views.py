@@ -6,7 +6,11 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
+import base64 
+import os
+from google import genai
+from google.genai import types
+from django.conf import settings
 
 # Login view
 def login(request):
