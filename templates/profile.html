@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{user.username}}'s Profile{% endblock %}
+{% block header_title %}User Profile - {{user.username}}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Profile Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+            <div class="relative group">
+                {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture"
+                    class="w-32 h-32 object-cover rounded-full border-4 border-[#275CAB] shadow-lg">
+                {% else %}
+                <div class="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center border-4 border-[#275CAB] shadow-lg">
+                    <i class="fas fa-user text-gray-400 text-4xl"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="flex-1 text-center md:text-left">
+                <h2 class="text-3xl font-bold text-[#275CAB]">{{user.username}}</h2>
+                <p class="text-gray-600">{{user.email}}</p>
+                <div class="mt-2 flex flex-wrap gap-2 justify-center md:justify-start">
+                    {% if profile.department %}
+                    <span class="bg-blue-100 text-[#275CAB] px-3 py-1 rounded-full text-sm font-medium">
+                        <i class="fas fa-building mr-1"></i>{{profile.department}}
+                    </span>
+                    {% endif %}
+                    {% if profile.semester %}
+                    <span class="bg-purple-100 text-[#AC1F7D] px-3 py-1 rounded-full text-sm font-medium">
+                        <i class="fas fa-calendar-alt mr-1"></i>Semester {{profile.semester}}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <button id="toggleEditBtn" class="bg-[#275CAB] text-white px-4 py-2 rounded-md hover:bg-[#1d4783] transition flex items-center">
+                    <i class="fas fa-edit mr-2"></i> Edit Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-md mb-2 flex items-center shadow-sm">
+            <i class="fas fa-check-circle mr-3 text-green-500 text-xl"></i>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Profile Info and Edit Form -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-xl font-bold text-[#275CAB] mb-4 flex items-center">
+                <i class="fas fa-user-circle mr-2"></i>Profile Information
+            </h3>
+            
+            <!-- View Profile (Default) -->
+            <div id="viewProfile" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Phone Number</p>
+                        <p class="text-gray-800">{{ profile.phone|default:"Not provided" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Department</p>
+                        <p class="text-gray-800">{{ profile.department|default:"Not provided" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Semester</p>
+                        <p class="text-gray-800">{{ profile.semester|default:"Not provided" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Email</p>
+                        <p class="text-gray-800">{{ user.email }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Edit Profile (Hidden by default) -->
+            <form id="editProfile" method="POST" enctype="multipart/form-data" class="space-y-6 hidden">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Phone Number</label>
+                        <div class="relative">
+                            <i class="fas fa-phone absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="phone" value="{{ profile.phone }}" placeholder="Enter your phone number"
+                                class="w-full border border-gray-300 rounded-md pl-10 px-4 py-2 focus:ring focus:ring-[#275CAB]/30 focus:border-[#275CAB]">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Department</label>
+                        <div class="relative">
+                            <i class="fas fa-building absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="department" value="{{ profile.department }}" placeholder="e.g. Computer Science"
+                                class="w-full border border-gray-300 rounded-md pl-10 px-4 py-2 focus:ring focus:ring-[#275CAB]/30 focus:border-[#275CAB]">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Semester</label>
+                        <div class="relative">
+                            <i class="fas fa-calendar-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="semester" value="{{ profile.semester }}" placeholder="e.g. 5"
+                                class="w-full border border-gray-300 rounded-md pl-10 px-4 py-2 focus:ring focus:ring-[#275CAB]/30 focus:border-[#275CAB]">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Profile Picture</label>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <div class="flex-shrink-0">
+                            {% if profile.profile_picture %}
+                            <div class="mb-2 relative group">
+                                <img id="profile-preview" src="{{ profile.profile_picture.url }}" alt="Profile Picture"
+                                    class="w-24 h-24 object-cover rounded-full border">
+                            </div>
+                            {% else %}
+                            <div class="mb-2 relative group">
+                                <img id="profile-preview" src="{% static 'images/default-avatar.png' %}" alt="Default Profile"
+                                    class="w-24 h-24 object-cover rounded-full border bg-gray-100">
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex-grow">
+                            <label for="profile-upload" class="cursor-pointer">
+                                <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg px-4 py-6 text-center hover:bg-gray-50 transition">
+                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl mb-2"></i>
+                                    <p class="text-sm text-gray-500">Click to upload a new photo</p>
+                                    <p class="text-xs text-gray-400 mt-1">JPG, PNG or GIF (Max 2MB)</p>
+                                    <input id="profile-upload" type="file" name="profile_picture" accept="image/*" class="hidden">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 pt-4 border-t">
+                    <button type="submit" class="bg-[#275CAB] text-white px-6 py-2 rounded-md hover:bg-[#1d4783] transition flex items-center">
+                        <i class="fas fa-save mr-2"></i> Save Changes
+                    </button>
+                    
+                    {% if profile.profile_picture %}
+                    <button type="submit" name="action" value="remove_picture" 
+                        class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition flex items-center">
+                        <i class="fas fa-trash-alt mr-2"></i> Remove Picture
+                    </button>
+                    {% endif %}
+                    
+                    <button type="button" id="cancelEdit" 
+                        class="border border-gray-300 bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- User's Complaints Section -->
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-[#275CAB] mb-4 flex items-center">
+                <i class="fas fa-clipboard-list mr-2"></i> Your Complaints
+                <span class="ml-2 bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full">
+                    {{ complaints|length }}
+                </span>
+            </h3>
+            
+            {% if complaints %}
+            <ul class="space-y-4">
+                {% for complaint in complaints %}
+                <li class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-3">
+                        <div>
+                            <div class="flex items-center mb-1">
+                                <a href="#" class="font-medium text-[#275CAB] hover:underline">{{ complaint.title }}</a>
+                                <span class="ml-2 text-xs text-white rounded-full px-2 py-0.5 
+                                    {% if complaint.status == 'pending' %}bg-yellow-500
+                                    {% elif complaint.status == 'in_progress' %}bg-blue-500
+                                    {% elif complaint.status == 'resolved' %}bg-green-500
+                                    {% elif complaint.status == 'closed' %}bg-gray-500
+                                    {% else %}bg-gray-500{% endif %}">
+                                    {{ complaint.get_status_display }}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                {{ complaint.created_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-4 text-sm">
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-eye mr-1 text-[#275CAB]"></i>
+                                <span>{{ complaint.total_views }}</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="flex items-center text-green-600">
+                                    <i class="fas fa-thumbs-up mr-1"></i>
+                                    <span>{{ complaint.total_upvotes }}</span>
+                                </span>
+                                <span class="flex items-center text-red-500">
+                                    <i class="fas fa-thumbs-down mr-1"></i>
+                                    <span>{{ complaint.total_downvotes }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                <div class="text-gray-400 mb-4">
+                    <i class="fas fa-clipboard-list text-5xl"></i>
+                </div>
+                <h4 class="text-gray-700 font-medium mb-2">No complaints yet</h4>
+                <p class="text-gray-500 text-sm mb-4">You haven't posted any complaints yet.</p>
+                <a href="{% url 'post_complaint' %}" class="inline-flex items-center text-[#275CAB] hover:underline">
+                    <i class="fas fa-plus-circle mr-2"></i> Submit your first complaint
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle between view and edit profile
+    document.getElementById('toggleEditBtn').addEventListener('click', function() {
+        document.getElementById('viewProfile').classList.add('hidden');
+        document.getElementById('editProfile').classList.remove('hidden');
+    });
+
+    document.getElementById('cancelEdit').addEventListener('click', function() {
+        document.getElementById('editProfile').classList.add('hidden');
+        document.getElementById('viewProfile').classList.remove('hidden');
+    });
+
+    // Image preview functionality
+    document.getElementById('profile-upload').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                document.getElementById('profile-preview').src = e.target.result;
+            }
+            
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}
