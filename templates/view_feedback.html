@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>View Feedback - UAP Authority Portal</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#275CAB',
+                        secondary: '#AC1F7D',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .status-badge {
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 500;   /* font-medium */
+    padding: 0.125rem 0.625rem; /* py-0.5 px-2.5 */
+    border-radius: 9999px; /* rounded-full */
+}
+
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #275CAB, #AC1F7D);
+        }
+
+        .rating-star {
+            filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.1));
+        }
+
+        .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .feedback-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-card::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-size: 150px;
+            opacity: 0.05;
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex justify-center items-center p-4">
+    <div class="max-w-4xl w-full">
+        <!-- Breadcrumbs -->
+        <div class="mb-6">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{% url 'authority_dashboard' %}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary">
+                            <i class="fas fa-home mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 mx-2 text-sm"></i>
+                            <span class="text-sm font-medium text-gray-500">View Feedback</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-lg card-shadow">
+            <!-- Header -->
+            <div class="gradient-bg text-white p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="flex items-center">
+                            <i class="fas fa-star-half-alt text-yellow-300 text-xl mr-3"></i>
+                            <h1 class="text-xl font-bold">Feedback Details</h1>
+                        </div>
+                        <p class="mt-2 text-white/80 text-sm">Feedback for response to complaint</p>
+                    </div>
+                    <div>
+                        <a href="{% url 'authority_dashboard' %}" class="inline-flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 transition-colors">
+                            <i class="fas fa-times text-white"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaint Info -->
+            <div class="p-6 border-b border-gray-100">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">{{ complaint.title }}</h2>
+                <div class="flex flex-wrap gap-3 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar-alt text-primary mr-2"></i>
+                        <span>{{ complaint.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-user-circle text-primary mr-2"></i>
+                        <span>{{ complaint.student.user.username }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-tag text-primary mr-2"></i>
+                        <span>{{ complaint.category|default:"General" }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="status-badge 
+                            {% if complaint.status == 'resolved' %}bg-green-100 text-green-800
+                            {% elif complaint.status == 'in_progress' %}bg-blue-100 text-blue-800
+                            {% elif complaint.status == 'pending' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            <i class="fas fa-circle text-xs mr-1.5"></i>
+                            {{ complaint.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Content -->
+            <div class="p-6">
+                {% if feedback %}
+                <div class="feedback-card bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="h-14 w-14 rounded-full bg-secondary/10 flex items-center justify-center border-2 border-secondary/20">
+                                <i class="fas fa-user text-secondary text-xl"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="text-gray-900 font-medium">{{ feedback.user.username }}</h3>
+                                    <p class="text-sm text-gray-500">{{ feedback.created_at|date:"F d, Y • h:i A" }}</p>
+                                </div>
+                                <div class="flex">
+                                    {% for i in "12345" %}
+                                    <i class="fas fa-star {% if forloop.counter <= feedback.rating %}text-yellow-400{% else %}text-gray-300{% endif %} mx-0.5 rating-star"></i>
+                                    {% endfor %}
+                                    <span class="ml-2 bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                        {{ feedback.rating }}/5
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                <h4 class="text-gray-500 text-sm font-medium mb-2">Feedback Comments</h4>
+                                <div class="text-gray-800">
+                                    {% if feedback.comments %}
+                                    <p>{{ feedback.comments|linebreaks }}</p>
+                                    {% else %}
+                                    <p class="text-gray-500 italic">No additional comments provided.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h4 class="text-gray-500 text-sm font-medium mb-2">Response Type</h4>
+                                <div class="flex space-x-4">
+                                   
+                                    <div class="flex-shrink-0">
+                                        {% if feedback.rating > 3 %}
+                                        <span class="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                                            <i class="fas fa-smile-beam mr-1.5"></i>Positive
+                                        </span>
+                                        {% elif feedback.rating == 3 %}
+                                        <span class="inline-flex items-center bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                                            <i class="fas fa-meh mr-1.5"></i>Neutral
+                                        </span>
+                                        {% else %}
+                                        <span class="inline-flex items-center bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                                            <i class="fas fa-frown mr-1.5"></i>Negative
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Tips -->
+                <div class="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-100">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <i class="fas fa-lightbulb text-blue-500 text-lg"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-blue-800 text-sm font-medium">Feedback Insights</h3>
+                            <p class="text-blue-700 text-sm mt-1">
+                                {% if feedback.rating > 3 %}
+                                This positive feedback reflects well on your response. Continue with this approach for future complaints.
+                                {% elif feedback.rating == 3 %}
+                                The student was somewhat satisfied with your response. Consider adding more details or follow-up options in similar cases.
+                                {% else %}
+                                This feedback indicates the student may need additional assistance. Consider reaching out to provide more support.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="flex flex-col items-center justify-center py-10">
+                    <div class="bg-gray-100 rounded-full p-6 mb-4">
+                        <i class="fas fa-star-half-alt text-gray-400 text-5xl"></i>
+                    </div>
+                    <h3 class="text-xl font-medium text-gray-700 mb-2">No Feedback Yet</h3>
+                    <p class="text-gray-500 text-center max-w-md">
+                        The student hasn't provided feedback on your response to this complaint yet. 
+                        Check back later or follow up with the student directly.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Feedback helps improve our response quality
+                    </span>
+                    <a href="{% url 'authority_dashboard' %}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
