@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit a Complaint{% endblock %}
+    
+{% block header_title %}Add New Complaint{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+    <h1 class="text-3xl font-bold text-[#275CAB] mb-6">Submit a Complaint</h1>
+
+    {% if messages %}
+    <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded">
+        {% for message in messages %}
+        <p class="text-green-700">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form action="{% url 'post_complaint' %}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="title" class="block text-gray-700 font-medium mb-2">Title <span class="text-red-600">*</span></label>
+                <input type="text" id="title" name="title" required
+                    class="w-full border border-gray-300 rounded-md p-3 focus:ring focus:ring-[#275CAB]/30 focus:border-[#275CAB] transition">
+            </div>
+
+            <div>
+                <label for="department" class="block text-gray-700 font-medium mb-2">Department <span class="text-red-600">*</span></label>
+                <input type="text" id="department" name="department" required
+                    class="w-full border border-gray-300 rounded-md p-3 focus:ring focus:ring-[#275CAB]/30 focus:border-[#275CAB] transition">
+            </div>
+        </div>
+
+        <div>
+            <label for="description" class="block text-gray-700 font-medium mb-2">Description <span class="text-red-600">*</span></label>
+            <textarea id="description" name="description" required rows="5"
+                class="w-full border border-gray-300 rounded-md p-3 focus:ring focus:ring-[#275CAB]/30 focus:border-[#275CAB] transition"
+                placeholder="Please provide detailed information about your complaint..."></textarea>
+        </div>
+
+        <div>
+            <label for="image" class="block text-gray-700 font-medium mb-2">Supporting Image (optional)</label>
+            <div class="flex flex-col space-y-4">
+                <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-[#275CAB] transition cursor-pointer" id="dropzone">
+                    <input type="file" id="image" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(this)">
+                    <div class="text-center" id="upload-prompt">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <p class="mt-1 text-sm text-gray-600">Drag and drop an image, or click to select a file</p>
+                        <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                </div>
+                
+                <div id="image-preview-container" class="hidden">
+                    <div class="relative">
+                        <img id="image-preview" class="max-h-64 rounded-lg mx-auto" src="" alt="Preview">
+                        <button type="button" onclick="removeImage()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="file-name" class="text-sm text-center mt-2 text-gray-600"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center">
+            <input type="checkbox" id="is_anonymous" name="is_anonymous"
+                class="h-5 w-5 text-[#275CAB] border-gray-300 rounded focus:ring-[#275CAB]">
+            <label for="is_anonymous" class="ml-2 text-gray-700">Submit Anonymously</label>
+            <div class="ml-2 group relative">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 w-64 bg-gray-800 text-white text-xs rounded p-2 transition-opacity">
+                    Your name will not be visible to others when this option is selected
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <button type="submit"
+                class="w-full bg-[#275CAB] text-white font-medium py-3 px-6 rounded-md hover:bg-[#1d4783] transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#275CAB]">
+                Submit Complaint
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function previewImage(input) {
+        const previewContainer = document.getElementById('image-preview-container');
+        const uploadPrompt = document.getElementById('upload-prompt');
+        const preview = document.getElementById('image-preview');
+        const fileName = document.getElementById('file-name');
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                fileName.textContent = file.name;
+                previewContainer.classList.remove('hidden');
+                uploadPrompt.classList.add('hidden');
+            }
+            
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    function removeImage() {
+        const input = document.getElementById('image');
+        const previewContainer = document.getElementById('image-preview-container');
+        const uploadPrompt = document.getElementById('upload-prompt');
+        
+        input.value = '';
+        previewContainer.classList.add('hidden');
+        uploadPrompt.classList.remove('hidden');
+    }
+    
+    // Optional: Add drag and drop functionality
+    const dropzone = document.getElementById('dropzone');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+        dropzone.classList.add('border-[#275CAB]', 'bg-blue-50');
+    }
+    
+    function unhighlight() {
+        dropzone.classList.remove('border-[#275CAB]', 'bg-blue-50');
+    }
+    
+    dropzone.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files && files.length) {
+            document.getElementById('image').files = files;
+            previewImage(document.getElementById('image'));
+        }
+    }
+</script>
+{% endblock %}
