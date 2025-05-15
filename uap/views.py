@@ -116,6 +116,64 @@ def home(request):
 
     return render(request, "home.html", {"complaints": complaints, 'page_name': 'dashboard'})
 
+
+
+# Post complaint view
+@login_required(login_url='login')
+def post_complaint(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        department = request.POST.get("department")
+        is_anonymous = request.POST.get("is_anonymous") == "on"
+        image = request.FILES.get("image")
+
+        complaint = Complaint(
+            user=request.user,
+            title=title,
+            description=description,
+            department=department,
+            is_anonymous=is_anonymous,
+            image=image
+        )
+        complaint.save()
+        messages.success(request, "Your complaint has been submitted successfully.")
+        return redirect("home")
+
+    return render(request, "post_complaint.html",{'page_name': 'new_complaint'} )
+
+
+@login_required(login_url='login')
+def complaint_responses_and_feedback(request):
+    user = request.user
+    complaints = Complaint.objects.filter(user=user).order_by("-created_at")
+
+    if request.method == "POST":
+        complaint_id = request.POST.get("complaint_id")
+        rating = int(request.POST.get("rating", 0))
+        comments = request.POST.get("comments", "")
+
+        complaint = get_object_or_404(Complaint, id=complaint_id, user=user)
+
+        if Feedback.objects.filter(complaint=complaint).exists():
+            messages.warning(request, "You've already given feedback for this complaint.")
+        else:
+            Feedback.objects.create(
+                complaint=complaint,
+                user=user,
+                rating=rating,
+                comments=comments
+            )
+            messages.success(request, "Thank you for your feedback!")
+
+        return redirect("complaint_responses")
+
+    return render(request, "complaint_responses.html", {
+        "complaints": complaints,
+        "page_name": "responses"
+    })
+
+
 @login_required(login_url='login')
 def university_faq(request):
     answer = None
